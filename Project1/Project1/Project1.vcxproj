@@ -108,6 +108,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(TargetDir)Data" mkdir "$(TargetDir)Data"
+
+copy /Y "$(ProjectDir)Data\Test1.csv" "$(TargetDir)Data\Test1.csv"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -122,6 +127,11 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)Data" mkdir "$(OutDir)Data"
+
+copy /Y "$(ProjectDir)Data\Test1.csv" "$(OutDir)Data\Test1.csv"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="소스.cpp" />

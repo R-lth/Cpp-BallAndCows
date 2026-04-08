@@ -177,8 +177,8 @@ bool Check(const string& answer, const string& input_str) {
 	for (int i = 0; i < 3; ++i) {
 		for (int j = 0; j < 3; ++j) {
 			if (answer[i] == input_str[j]) {
-				if (i == j) strike++;
-				else ball++;
+				if (i == j) strike++; 
+				else ball++;        
 			}
 		}
 	}
