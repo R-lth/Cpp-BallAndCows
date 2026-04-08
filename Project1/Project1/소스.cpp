@@ -171,34 +171,19 @@ void Input(int& input_n, string& input_str) {
 }
 
 bool Check(const string& answer, const string& input_str) {
-	if (answer == input_str) {
-		return true;
-	}
-
-	// 스트라이크 개수
 	int strike = 0;
-	if (answer[0] == input_str[0]) { ++strike; }
-	if (answer[1] == input_str[1]) { ++strike; }
-	if (answer[2] == input_str[2]) { ++strike; }
-
-	// 볼 개수
 	int ball = 0;
-	int arr1[10] = { 0 };
-	int arr2[10] = { 0 };
-	for (const char ch : answer) {
-		++arr1[ch - '0'];
-	}
 
-	for (const char ch : input_str) {
-		++arr2[ch - '0'];
-	}
-
-	for (int i = 0; i < 10; ++i) {
-		if (arr1[i] > 0 && arr2[i] > 0) {
-			++ball;
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (answer[i] == input_str[j]) {
+				if (i == j) strike++;
+				else ball++;
+			}
 		}
 	}
-	ball -= strike;
+
+	if (strike == 3) return true;
 
 	cout << "--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*--*-" << '\n';
 	if (strike == 0 && ball == 0) {
@@ -208,7 +193,6 @@ bool Check(const string& answer, const string& input_str) {
 		cout << "아쉽네요!" << " " << strike << "스트라이크" << " " << ball << "볼" << "~~" << '\n';
 	}
 	cout << "----------------------------------------------------------------" << '\n';
-
 	return false;
 }
 
