@@ -47,106 +47,41 @@ bool NormalizeAndCheck(string& value) {
 		return false;
 	}
 
-	// 앞자리 숫자 검증
-	if (value[0] == '0') {
-		cout << "파일 데이터 오류: [" << value << "]\n";
-		return false;
-	}
-
 	return true;
 }
 
-int GetRandomRow(const int rowCount, bool hasHeader = true)
-{
-	// 헤더 제외
-	int start = hasHeader ? 1 : 0;
-	if (rowCount <= start) {
-		std::cout << "파일 행이 없습니다.\n";
-		return -1;
-	}
-
-	// 랜덤 생성
-	random_device rd;
-	mt19937 gen(rd());
-	uniform_int_distribution<int> dist(start, rowCount - 1);
-
-	int randomRow = dist(gen);
-	return randomRow;
-}
-
 string GetData() {
-	// 파일 열기
 	string filePath = "Data/Test1.csv";
 	ifstream file(filePath);
 
-	if (!file.is_open())
-	{
-		cout << "파일 열기 실패: " << filePath << '\n';
-		// cout << "현재 실행 경로: " << std::filesystem::current_path() << '\n';
-		return "";
-	}
-
-	// 파일 행 개수
-	int rowCount = 0;
+	vector<string> candidate;
 	string line;
 
-	// 전체 라인 수 카운트
+	if (!file.is_open()) return "";
+
 	while (getline(file, line)) {
-		if (!line.empty()) {
-			++rowCount;
+		stringstream ss(line);
+		string value;
+		if (getline(ss, value, ',')) {
+			if (NormalizeAndCheck(value)) {
+				candidate.push_back(value);
+			}
 		}
 	}
 
-	if (rowCount == 0) {
-		std::cout << "파일이 비어있습니다.\n";
-		return "";
-	}
+	if (candidate.empty()) return "";
 
-	// 파일 포인터 원위치
-	file.clear();
-	file.seekg(0);
+	// 유효한 정답 후보들 중 하나를 랜덤 선택
+	random_device rd;
+	mt19937 gen(rd());
+	uniform_int_distribution<int> dist(0, candidate.size() - 1);
 
-	// 랜덤으로 행 지정
-	int curRow = 0;
-	int targetRow = GetRandomRow(rowCount, 0);
-	if (targetRow == -1) {
-		std::cout << "파일이 비어있습니다.\n";
-		return "";
-	}
-
-	string data;
-	while (getline(file, data)) {
-		if (curRow == targetRow) {
-			break;
-		}
-		++curRow;
-	}
-
-	// 파일 끝까지 갔는데 못 찾은 경우
-	if (data.empty()) {
-		cout << "파일 행이 존재하지 않습니다\n";
-		return "";
-	}
-
-	// 게임 정답 숫자 추출
-	stringstream ss(data);
-	string value;
-	getline(ss, value, ','); // csv이므로 ,로 읽음
-	
-	// 파일 닫기
-	file.close();
-
-	if (NormalizeAndCheck(value)) {
-		return value;
-	}
-	else {
-		return "";
-	}
+	return candidate[dist(gen)];
 }
 
-void Input(int& input_n, string& input_str) {
+void Input(string& input_str) {
 	while (true) {
-		cin >> input_n;
+		cin >> input_str;
 
 		if (cin.fail()) {
 			cin.clear();
@@ -155,7 +90,6 @@ void Input(int& input_n, string& input_str) {
 			continue;
 		}
 
-		input_str = to_string(input_n);
 		if (input_str.length() != 3) {
 			cout << "세자리 숫자로 입력하세요" << '\n';
 			continue;
@@ -277,12 +211,12 @@ void Game(const string& answer, int chance) {
 	bool isSuccess = false;
 
 	for (int i = 0; i < chance; ++i) {
-		cout << "[ ROUND " << i << " ]" << '\n';
+		cout << "[ ROUND " << i + 1 << " ]" << '\n';
 		cout << "  └─ 숫자 입력 : ";
 
 		int input_n;
 		string input_str;
-		Input(input_n, input_str);
+		Input(input_str);
 		
 		isSuccess = Check(answer, input_str);
 		if (isSuccess) {
@@ -312,6 +246,10 @@ int main(void) {
 	else {
 		cout << "파일을 수정해주세요." << '\n';
 	}
+
+	cin.clear();
+	cin.ignore(1000, '\n');
+	cin.get();
 
 	return 0;
 }
